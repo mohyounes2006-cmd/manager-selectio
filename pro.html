@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>اختيار المدير العام</title>
+<style>
+    body { font-family: Arial; background:#f4f4f4; padding:20px; }
+    h2 { background:#ddd; padding:10px; }
+    .candidate { background:white; padding:15px; margin-bottom:20px; border-radius:8px; }
+    label { display:block; margin-top:10px; font-weight:bold; }
+    input, select { width:100%; padding:8px; margin-top:5px; }
+    .range-value { font-weight:bold; color:#333; }
+    button { padding:12px 20px; margin-top:20px; font-size:16px; cursor:pointer; }
+    #result { background:#fff; padding:20px; margin-top:20px; font-size:20px; border-radius:8px; }
+</style>
+</head>
+<body>
+
+<h1>نظام اختيار مدير عام – 100 نقطة</h1>
+
+<!-- إنشاء 5 مرشحين -->
+<script>
+function createCandidateForm(id) {
+    return `
+    <div class="candidate">
+        <h2>المرشح رقم ${id}</h2>
+
+        <label>الاسم الكامل</label>
+        <input type="text" id="name${id}" required>
+
+        <label>العمر</label>
+        <input type="number" id="age${id}" min="18" max="80" required>
+
+        <label>الشهادة الحاصل عليها</label>
+        <select id="degree${id}">
+            <option value="10">بكالوريوس</option>
+            <option value="15">ماجستير</option>
+            <option value="20">دكتوراه</option>
+        </select>
+
+        <label>سنوات الخبرة: <span id="expVal${id}" class="range-value">1</span></label>
+        <input type="range" id="exp${id}" min="1" max="20" value="1"
+            oninput="document.getElementById('expVal${id}').innerText=this.value">
+
+        <label>عدد اللغات الأجنبية: <span id="langVal${id}" class="range-value">0</span></label>
+        <input type="range" id="langs${id}" min="0" max="5" value="0"
+            oninput="document.getElementById('langVal${id}').innerText=this.value">
+
+        <label>مهارة استخدام الحاسب: <span id="skill1Val${id}" class="range-value">0</span></label>
+        <input type="range" id="skill1_${id}" min="0" max="20" value="0"
+            oninput="document.getElementById('skill1Val${id}').innerText=this.value">
+
+        <label>مهارات العمل ضمن فريق: <span id="skill2Val${id}" class="range-value">0</span></label>
+        <input type="range" id="skill2_${id}" min="0" max="20" value="0"
+            oninput="document.getElementById('skill2Val${id}').innerText=this.value">
+
+        <label>الشخصية القيادية: <span id="skill3Val${id}" class="range-value">0</span></label>
+        <input type="range" id="skill3_${id}" min="0" max="20" value="0"
+            oninput="document.getElementById('skill3Val${id}').innerText=this.value">
+    </div>`;
+}
+</script>
+
+<div id="candidates"></div>
+
+<script>
+// إنشاء الـ 5 نماذج
+let container = document.getElementById("candidates");
+for (let i = 1; i <= 5; i++) container.innerHTML += createCandidateForm(i);
+</script>
+
+<button onclick="calculateWinner()">احسب الفائز</button>
+
+<div id="result"></div>
+
+<script>
+function calculateWinner() {
+    let scores = [];
+
+    for (let i = 1; i <= 5; i++) {
+        let name = document.getElementById("name" + i).value.trim();
+        if (!name) { alert("الرجاء إدخال اسم المرشح رقم " + i); return; }
+
+        let degree = Number(document.getElementById("degree" + i).value);
+        let exp = Number(document.getElementById("exp" + i).value);
+        let langs = Number(document.getElementById("langs" + i).value) * 4; // كل لغة = 4 نقاط
+        let skill1 = Number(document.getElementById("skill1_" + i).value);
+        let skill2 = Number(document.getElementById("skill2_" + i).value);
+        let skill3 = Number(document.getElementById("skill3_" + i).value);
+
+        let total = degree + exp + langs + skill1 + skill2 + skill3;
+
+        scores.push({ name, total });
+    }
+
+    scores.sort((a, b) => b.total - a.total);
+
+    document.getElementById("result").innerHTML =
+        `✔ الفائز هو: <strong>${scores[0].name}</strong><br>بمجموع نقاط: <strong>${scores[0].total}</strong>`;
+}
+</script>
+
+</body>
+</html>
